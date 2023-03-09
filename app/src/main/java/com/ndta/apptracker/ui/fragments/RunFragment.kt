@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.ndta.apptracker.R
 import com.ndta.apptracker.databinding.FragmentRunBinding
 import com.ndta.apptracker.ui.viewmodel.MainViewModel
@@ -22,7 +23,14 @@ class RunFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_run, container, false)
+        setupView()
         return binding.root
+    }
+
+    private fun setupView() {
+        binding.apply {
+            fab.setOnClickListener { findNavController().navigate(R.id.action_runFragment_to_trackingFragment) }
+        }
     }
 
 }

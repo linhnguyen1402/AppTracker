@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_run"
         >
         <action
-            android:id="@+id/action_runFragment_to_trackingFragment2"
+            android:id="@+id/action_runFragment_to_trackingFragment"
             app:destination="@id/trackingFragment" />
     </fragment>
     <fragment
@@ -21,9 +21,8 @@
         android:label="SetupFragment"
         tools:layout="@layout/fragment_setup"
         >
-
         <action
-            android:id="@+id/action_setupFragment_to_runFragment2"
+            android:id="@+id/action_setupFragment_to_runFragment"
             app:destination="@id/runFragment" />
     </fragment>
     <fragment
