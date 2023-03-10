@@ -2,7 +2,7 @@ package com.ndta.apptracker.di
 
 import android.content.Context
 import androidx.room.Room
-import com.ndta.apptracker.db.Constants.RUNNING_DATABASE_NAME
+import com.ndta.apptracker.utils.Constants.RUNNING_DATABASE_NAME
 import com.ndta.apptracker.db.RunningDatabase
 import dagger.Module
 import dagger.Provides
