@@ -18,6 +18,7 @@ import com.ndta.apptracker.services.Polyline
 import com.ndta.apptracker.services.TrackingService
 import com.ndta.apptracker.ui.viewmodel.MainViewModel
 import com.ndta.apptracker.utils.Constants
+import com.ndta.apptracker.utils.TrackingUtility
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,6 +29,7 @@ class TrackingFragment : Fragment() {
     private var map: GoogleMap? = null
     private var pathPoints = mutableListOf<Polyline>()
     private var isTracking = false
+    private var curTimeMillis = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,6 +64,12 @@ class TrackingFragment : Fragment() {
             pathPoints = it
             addLatestPolyline()
             moveCameraToUser()
+        })
+
+        TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
+            curTimeMillis = it
+            val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeMillis, true)
+            binding.tvTimer.text = formattedTime
         })
     }
 
