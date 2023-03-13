@@ -10,7 +10,6 @@ import android.content.Intent
 import android.location.Location
 import android.os.Build
 import android.os.Looper
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
@@ -44,7 +43,7 @@ class TrackingService : LifecycleService() {
     private fun postInitialValues() {
         isTracking.postValue(false)
         pathPoints.postValue(mutableListOf())
-    } 
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -70,6 +69,7 @@ class TrackingService : LifecycleService() {
                 }
                 Constants.ACTION_PAUSE_SERVICE -> {
                     Timber.d("Pause Service")
+                    pauseService()
                 }
                 Constants.ACTION_STOP_SERVICE -> {
                     Timber.d("Stop Service")
@@ -79,8 +79,13 @@ class TrackingService : LifecycleService() {
         return super.onStartCommand(intent, flags, startId)
     }
 
+    private fun pauseService() {
+        isTracking.postValue(false)
+    }
+
     private fun startForeGroundService() {
         addEmptyPolyline()
+        isTracking.postValue(true)
         Timber.d("Started Service")
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
