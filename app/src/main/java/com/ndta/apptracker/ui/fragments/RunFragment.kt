@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -15,6 +16,7 @@ import com.ndta.apptracker.adapter.RunAdapter
 import com.ndta.apptracker.databinding.FragmentRunBinding
 import com.ndta.apptracker.ui.viewmodel.MainViewModel
 import com.ndta.apptracker.utils.Constants
+import com.ndta.apptracker.utils.SortType
 import com.ndta.apptracker.utils.TrackingUtility
 import dagger.hilt.android.AndroidEntryPoint
 import pub.devrel.easypermissions.AppSettingsDialog
@@ -33,7 +35,37 @@ class RunFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_run, container, false)
         setupView()
         setupRecyclerView()
-        mainViewModel.runSortedByDate.observe(viewLifecycleOwner, Observer {
+        when (mainViewModel.sortType) {
+            SortType.DATE -> binding.spFilter.setSelection(0)
+            SortType.RUNNING_TIME -> binding.spFilter.setSelection(1)
+            SortType.DISTANCE -> binding.spFilter.setSelection(2)
+            SortType.AVG_SPEED -> binding.spFilter.setSelection(3)
+            SortType.CALORIES_BURNED -> binding.spFilter.setSelection(4)
+        }
+
+        binding.spFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                when (position) {
+                    0 -> mainViewModel.sortRuns(SortType.DATE)
+                    1 -> mainViewModel.sortRuns(SortType.RUNNING_TIME)
+                    2 -> mainViewModel.sortRuns(SortType.DISTANCE)
+                    3 -> mainViewModel.sortRuns(SortType.AVG_SPEED)
+                    4 -> mainViewModel.sortRuns(SortType.CALORIES_BURNED)
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+        }
+
+        mainViewModel.runs.observe(viewLifecycleOwner, Observer {
             runAdapter.submitList(it)
         })
         return binding.root
