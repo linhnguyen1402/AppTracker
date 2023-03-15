@@ -41,6 +41,11 @@ class MainActivity : AppCompatActivity() {
                 }
         }
         navigateToTrackingFragmentIfNeeded(intent)
+
+    }
+
+    fun updateTitle(title: String) {
+        binding.tvToolbarTitle.text = title
     }
 
     private fun navigateToTrackingFragmentIfNeeded(intent: Intent?) {

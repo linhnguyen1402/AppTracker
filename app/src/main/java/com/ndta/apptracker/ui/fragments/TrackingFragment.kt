@@ -26,6 +26,7 @@ import com.ndta.apptracker.utils.Constants
 import com.ndta.apptracker.utils.TrackingUtility
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 import kotlin.math.round
 
 @AndroidEntryPoint
@@ -37,6 +38,8 @@ class TrackingFragment : Fragment() {
     private var pathPoints = mutableListOf<Polyline>()
     private var isTracking = false
     private var curTimeMillis = 0L
+
+    @set:Inject
     private var weight = 70f
 
     private var trackingMenu: Menu? = null
