@@ -8,8 +8,10 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.ndta.apptracker.R
+import com.ndta.apptracker.adapter.RunAdapter
 import com.ndta.apptracker.databinding.FragmentRunBinding
 import com.ndta.apptracker.ui.viewmodel.MainViewModel
 import com.ndta.apptracker.utils.Constants
@@ -22,6 +24,7 @@ import pub.devrel.easypermissions.EasyPermissions
 class RunFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var binding: FragmentRunBinding
     private val mainViewModel by viewModels<MainViewModel>()
+    private lateinit var runAdapter: RunAdapter
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -29,6 +32,10 @@ class RunFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_run, container, false)
         setupView()
+        setupRecyclerView()
+        mainViewModel.runSortedByDate.observe(viewLifecycleOwner, Observer {
+            runAdapter.submitList(it)
+        })
         return binding.root
     }
 
@@ -41,6 +48,11 @@ class RunFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         binding.apply {
             fab.setOnClickListener { findNavController().navigate(R.id.action_runFragment_to_trackingFragment) }
         }
+    }
+
+    private fun setupRecyclerView() = binding.rvRuns.apply {
+        runAdapter = RunAdapter()
+        adapter = runAdapter
     }
 
     private fun requestPermissions() {
