@@ -40,7 +40,7 @@
         tools:layout="@layout/fragment_tracking">
 
         <action
-            android:id="@+id/action_trackingFragment_to_runFragment2"
+            android:id="@+id/action_trackingFragment_to_runFragment"
             app:destination="@id/runFragment" />
     </fragment>
     <fragment

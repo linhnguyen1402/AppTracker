@@ -2,16 +2,18 @@ package com.ndta.apptracker.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.ndta.apptracker.R
 import com.ndta.apptracker.databinding.FragmentTrackingBinding
 import com.ndta.apptracker.services.Polyline
@@ -30,6 +32,8 @@ class TrackingFragment : Fragment() {
     private var pathPoints = mutableListOf<Polyline>()
     private var isTracking = false
     private var curTimeMillis = 0L
+
+    private var trackingMenu: Menu? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,6 +57,54 @@ class TrackingFragment : Fragment() {
             }
             subscribeToObservers()
         }
+
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.toolbar_tracking_menu, menu)
+                trackingMenu = menu
+            }
+
+            override fun onPrepareMenu(menu: Menu) {
+                super.onPrepareMenu(menu)
+                if (curTimeMillis > 0L) {
+                    menu?.getItem(0)?.isVisible = true
+                }
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.miCancelTracking -> {
+                        showCancelTrackingDialog()
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+        })
+    }
+
+    private fun showCancelTrackingDialog() {
+        val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme)
+            .setTitle("Cancel the Run?")
+            .setMessage("Are you sure to cancel the current run and delete all its data?")
+            .setIcon(R.drawable.ic_delete)
+            .setPositiveButton("Yes") { _, _ ->
+                stopRun()
+            }
+            .setNegativeButton("No") { dialogInterface, _ ->
+                dialogInterface.cancel()
+            }
+            .create()
+
+        dialog.show()
+
+    }
+
+    private fun stopRun() {
+        sendCommandToService(Constants.ACTION_STOP_SERVICE)
+        findNavController().navigate(R.id.action_trackingFragment_to_runFragment)
     }
 
     private fun subscribeToObservers() {
@@ -75,6 +127,7 @@ class TrackingFragment : Fragment() {
 
     private fun toggleRun() {
         if (isTracking) {
+            trackingMenu?.getItem(0)?.isVisible = true
             sendCommandToService(Constants.ACTION_PAUSE_SERVICE)
         } else {
             sendCommandToService(Constants.ACTION_START_OR_RESUME_SERVICE)
@@ -87,6 +140,7 @@ class TrackingFragment : Fragment() {
             binding.btnToggleRun.text = "Start"
             binding.btnFinishRun.visibility = View.VISIBLE
         } else {
+            trackingMenu?.getItem(0)?.isVisible = true
             binding.btnToggleRun.text = "Stop"
             binding.btnFinishRun.visibility = View.GONE
         }
